@@ -1,0 +1,9 @@
+{
+	"id": "property-attributes",
+	"name": "Property Attributes",
+	"version": "0.1.0",
+	"minAppVersion": "1.11.4",
+	"description": "Injects data-property-key attributes on the All Properties panel so CSS snippets can target properties by name.",
+	"author": "Darren Kuro",
+	"isDesktopOnly": false
+}

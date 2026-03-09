@@ -1,0 +1,17 @@
+{
+	"name": "obsidian-property-attributes",
+	"version": "0.1.0",
+	"description": "Injects data-property-key attributes on the All Properties panel",
+	"main": "main.js",
+	"scripts": {
+		"dev": "node esbuild.config.mjs",
+		"build": "node esbuild.config.mjs production"
+	},
+	"devDependencies": {
+		"@types/node": "^22.0.0",
+		"esbuild": "^0.24.0",
+		"obsidian": "latest",
+		"tslib": "^2.8.0",
+		"typescript": "^5.7.0"
+	}
+}

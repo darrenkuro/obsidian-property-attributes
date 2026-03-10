@@ -6,6 +6,8 @@
 
 > Obsidian plugin that injects `data-property-key` attributes on the All Properties panel for CSS targeting.
 
+> **Note:** This plugin is built for personal use. I'm unlikely to accept pull requests or feature requests.
+
 ---
 
 ## Overview

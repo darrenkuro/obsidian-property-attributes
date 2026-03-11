@@ -1,81 +1,65 @@
-<h1 align="center">Property Attributes</h1>
+<h1 align="center">Vault Augments</h1>
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License"></a>
 </p>
 
-> Obsidian plugin that injects `data-property-key` attributes on the All Properties panel for CSS targeting.
+> Obsidian plugin that enriches the DOM for CSS targeting: property key attributes, inline code language highlighting.
 
 > **Note:** This plugin is built for personal use. I'm unlikely to accept pull requests or feature requests.
 
 ---
 
-## Overview
+## Augments
 
-This is a personal tool built to do one thing well: expose property names as data attributes in Obsidian's All Properties sidebar panel.
+### Property Keys
 
-Obsidian's note properties view already provides `data-property-key` attributes on each property row, making CSS customization straightforward. The All Properties sidebar panel, however, uses plain `.tree-item` elements with no data attributes — the property name exists only as text content, which CSS cannot select. This plugin bridges that gap by reading each property name and injecting a matching `data-property-key` attribute, so a single CSS snippet can target properties by name in both views.
+Injects `data-property-key` attributes on Obsidian's All Properties sidebar panel so CSS snippets can target properties by name.
 
-## Motivation
+Obsidian's note properties view provides `data-property-key` attributes on each property row, but the All Properties sidebar uses plain `.tree-item` elements with no data attributes. This augment bridges that gap by reading each property name and injecting a matching `data-property-key` attribute.
 
-Plugins like [Iconic](https://github.com/gfxholo/iconic) offer comprehensive icon customization for properties, files, tabs, and more. This plugin covers a small subset of that functionality — specifically, enabling CSS-based property icon styling in the sidebar.
+**How it works:** On layout ready and every layout change, finds all properties containers, reads `.tree-item-inner-text`, and sets `data-property-key="<name>"`. Uses a debounced `MutationObserver` to re-inject on updates. All attributes are removed on unload.
 
-The trade-off is intentional. By keeping the scope minimal and the implementation in pure CSS (with a thin attribute-injection layer), there are no settings to manage, no icon packs to bundle, and no runtime overhead beyond a lightweight DOM observer. The styling itself lives in a standard CSS snippet, fully under the user's control and trivially auditable.
+### Inline Code Language
 
-## How It Works
+Adds language-aware syntax highlighting to inline code in reading mode via a `lang>content` prefix syntax.
 
-On layout ready and every layout change, the plugin:
+Write `` `ts>const x: string` `` in your notes, and in reading mode the plugin will:
 
-1. Finds all `.workspace-leaf-content[data-type="all-properties"]` containers
-2. For each `.tree-item`, reads `.tree-item-inner-text` and sets `data-property-key="<name>"`
-3. Watches for DOM changes via `MutationObserver` (debounced) to re-inject on updates
+1. Strip the `ts>` prefix from display text
+2. Set `data-lang="typescript"` attribute and `lang-typescript` CSS class
+3. Apply Prism.js syntax highlighting (bundled in Obsidian)
 
-On unload, all injected attributes are removed and observers disconnected. No persistent state, no data files.
+**Supported aliases:** `js`, `ts`, `py`, `rb`, `sh`, `yml`, `md`, `rs`, `cs`, `cpp`, `hs`, `ex` (plus any full Prism language name).
+
+**CSS targeting example:**
+```css
+code[data-lang="typescript"] { border-left: 2px solid #3178c6; }
+code[data-lang="python"]     { border-left: 2px solid #3776ab; }
+```
 
 ## Installation
 
-This plugin is not published to the Obsidian community directory. It can be installed via [BRAT](https://github.com/TfTHacker/obsidian42-brat) at your own discretion:
+Install via [BRAT](https://github.com/TfTHacker/obsidian42-brat):
 
 1. Install the BRAT plugin if you haven't already
-2. In BRAT settings, add `darrenkuro/obsidian-property-attributes`
+2. In BRAT settings, add `darrenkuro/vault-augments`
 3. Enable the plugin in Obsidian's community plugins settings
-
-As a personal tool, there are no guarantees of support or compatibility with future Obsidian versions.
-
-## Usage
-
-Once enabled, all `.tree-item` elements in the All Properties panel will have `data-property-key` attributes matching their property names. Use CSS snippets to style properties in both views with combined selectors:
-
-```css
-/* Hide default icon and replace with a custom one */
-.metadata-property[data-property-key="tags"] .metadata-property-icon svg,
-.tree-item[data-property-key="tags"] .tree-item-icon svg {
-  display: none;
-}
-
-.metadata-property[data-property-key="tags"] .metadata-property-icon::after,
-.tree-item[data-property-key="tags"] .tree-item-icon::after {
-  content: "";
-  display: inline-block;
-  width: var(--icon-size);
-  height: var(--icon-size);
-  -webkit-mask-image: url("data:image/svg+xml,...");
-  -webkit-mask-size: contain;
-  background-color: var(--color-orange);
-}
-```
 
 ## Project Structure
 
 ```
-obsidian-property-attributes/
+vault-augments/
   src/
-    main.ts           -- Plugin source (~90 lines)
-  manifest.json       -- Obsidian plugin manifest
-  esbuild.config.mjs  -- Build config
-  .github/
-    workflows/
-      release.yml     -- CD: build + release on push to main
+    main.ts                  -- Plugin orchestrator
+    types.ts                 -- Augment interface
+    augments/
+      property-keys.ts       -- data-property-key injection
+      inline-code-lang.ts    -- lang prefix → Prism highlighting
+  manifest.json
+  esbuild.config.mjs
+  .github/workflows/
+    release.yml              -- CD: build + release on push to main
 ```
 
 ---

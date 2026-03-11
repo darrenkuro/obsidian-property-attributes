@@ -1,9 +1,9 @@
 {
-	"id": "property-attributes",
-	"name": "Property Attributes",
-	"version": "0.1.0",
+	"id": "vault-augments",
+	"name": "Vault Augments",
+	"version": "0.3.0",
 	"minAppVersion": "1.11.4",
-	"description": "Injects data-property-key attributes on the All Properties panel so CSS snippets can target properties by name.",
+	"description": "DOM enrichment for CSS targeting: property key attributes, inline code language highlighting.",
 	"author": "Darren Kuro",
 	"isDesktopOnly": false
 }
